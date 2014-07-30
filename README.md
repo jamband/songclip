@@ -10,3 +10,6 @@ Sets a CLIP_FILE variable. the title will be save in this file. e.g. .bash_profi
 ```sh
 export CLIP_FILE=$HOME/path/to/songclip.txt
 ```
+
+## Demo
+![gif](http://jamband.github.io/images/songclip.gif)
