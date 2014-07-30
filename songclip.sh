@@ -31,11 +31,6 @@ check_stream() {
   fi
 }
 
-# Displays the clipped song list
-list_view() {
-  cat -n "$CLIP_FILE"
-}
-
 # If the argument is not specified
 if [ "$#" -eq 0 ]; then
   check_stream
@@ -55,7 +50,7 @@ case "$1" in
     echo "Now playing: $CURRENT_STREAM_TITLE"
     ;;
   list)
-    list_view
+    cat -n "$CLIP_FILE"
     ;;
   delete)
     read -p "Please enter the line number: " answer
