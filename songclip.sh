@@ -13,7 +13,7 @@ declare -r CURRENT_STREAM_TITLE=$(osascript -e '
 
 # Usage
 usage() {
-  cat << EOD
+  cat <<EOD
 Usage: $COMMAND_NAME <subcommand>
   now       Displays a current stream title
   list      Displays the clipped song list
@@ -38,7 +38,7 @@ if [ "$#" -eq 0 ]; then
     echo "Now Playing the stream title is already exists." 1>&2
     exit 1
   fi
-  echo "$CURRENT_STREAM_TITLE" >> "$CLIP_FILE"
+  echo "$CURRENT_STREAM_TITLE" >>"$CLIP_FILE"
   echo "Clipped: $CURRENT_STREAM_TITLE"
   exit 0
 fi
@@ -71,7 +71,7 @@ case "$1" in
   purge)
     read -p "Are you sure you want to empty the file? (yes|no): " answer
     if [ $answer = "y" -o "$answer" = "yes" ]; then
-      echo -n > "$CLIP_FILE"
+      >"$CLIP_FILE"
       echo "Purged the contents of the file."
     fi
     ;;
