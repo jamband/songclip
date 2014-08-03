@@ -4,6 +4,9 @@ Saves the current stream title of iTunes internet radio to a text file with Bash
 ## Requirements
 * Mac OSX
 
+## Install
+Download the songclip.sh and put in directory any.
+
 ## Usage
 Sets a CLIP_FILE variable. the title will be save in this file. e.g. .bash_profile, etc...
 
