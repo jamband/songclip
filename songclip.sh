@@ -26,8 +26,8 @@ EOD
 # Checks the stream
 check_stream() {
   if [ "$CURRENT_STREAM_TITLE" = "missing value" -o "$CURRENT_STREAM_TITLE" = "" ]; then
-    echo "Error: Can't retrieve the cunrent stream title."
-    exit 1
+    echo "Error: Can't retrieve the cunrent stream title." 1>&2
+    return 1
   fi
 }
 
@@ -35,7 +35,7 @@ check_stream() {
 if [ "$#" -eq 0 ]; then
   check_stream
   if grep -Fqs "$CURRENT_STREAM_TITLE" "$CLIP_FILE"; then
-    echo "Now Playing the stream title is already exists."
+    echo "Now Playing the stream title is already exists." 1>&2
     exit 1
   fi
   echo "$CURRENT_STREAM_TITLE" >> "$CLIP_FILE"
@@ -65,7 +65,7 @@ case "$1" in
         exit 0
       fi
     fi
-    echo "There is no such line. Please try again."
+    echo "There is no such line. Please try again." 1>&2
     exit 1
     ;;
   purge)
@@ -76,7 +76,7 @@ case "$1" in
     fi
     ;;
   *)
-    usage
+    usage 1>&2
     exit 1
     ;;
 esac
