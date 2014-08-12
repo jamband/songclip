@@ -1,18 +1,12 @@
 #!/usr/bin/env bash
 set -eu
 
-# Gets the command name
+# Initialization
 declare -r COMMAND_NAME=$(basename "$0")
-
-# Gets the title from iTunes
-declare -r CURRENT_STREAM_TITLE=$(osascript -e '
-  if application "iTunes" is running
-    tell application "iTunes" to current stream title
-  end if
-')
+declare -r CURRENT_STREAM_TITLE=$(osascript -e 'tell application "iTunes" to current stream title')
 
 # Usage
-usage() {
+function usage {
   cat <<EOD
 Usage: $COMMAND_NAME <subcommand>
   now       Displays a current stream title
@@ -24,8 +18,8 @@ EOD
 }
 
 # Checks the stream
-check_stream() {
-  if [ "$CURRENT_STREAM_TITLE" = "missing value" -o "$CURRENT_STREAM_TITLE" = "" ]; then
+function check_stream {
+  if [ "$CURRENT_STREAM_TITLE" = "missing value" ]; then
     echo "Error: Can't retrieve the cunrent stream title." 1>&2
     return 1
   fi
@@ -53,14 +47,11 @@ case "$1" in
     cat -n "$CLIP_FILE"
     ;;
   delete)
-    read -p "Please enter the line number: " answer
-    expr "$answer" + 1 >/dev/null 2>&1 | true
-
+    read -p "Please enter the line number: " input
+    expr "$input" + 1 >/dev/null 2>&1 | true
     if [ "${PIPESTATUS[0]}" -lt 2 ]; then
-      rows=$(awk 'END { print NR }' "$CLIP_FILE")
-
-      if [ "$answer" -ne 0 -a "$answer" -le "$rows" ]; then
-        sed -i "" -e "${answer}d" "$CLIP_FILE"
+      if [ "$input" -ne 0 -a "$input" -le $(awk 'END { print NR }' "$CLIP_FILE") ]; then
+        sed -i "" "${input}d" "$CLIP_FILE"
         echo "Deleted a line."
         exit 0
       fi
@@ -69,14 +60,14 @@ case "$1" in
     exit 1
     ;;
   purge)
-    read -p "Are you sure you want to empty the file? (yes|no): " answer
-    if [ $answer = "y" -o "$answer" = "yes" ]; then
+    read -p "Are you sure you want to empty the file? (yes|no): " input
+    if [ $input = "y" -o "$input" = "yes" ]; then
       >"$CLIP_FILE"
       echo "Purged the contents of the file."
     fi
     ;;
   *)
-    usage 1>&2
+    usage
     exit 1
     ;;
 esac
