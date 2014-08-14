@@ -2,25 +2,25 @@
 set -eu
 
 # Initialization
-declare -r COMMAND_NAME=$(basename "$0")
-declare -r CURRENT_STREAM_TITLE=$(osascript -e 'tell application "iTunes" to current stream title')
+COMMAND_NAME=$(basename "$0")
+CURRENT_STREAM_TITLE=$(osascript -e 'tell application "iTunes" to current stream title')
 
 # Usage
 function usage {
   cat <<EOD
 Usage: $COMMAND_NAME <subcommand>
-  now       Displays a current stream title
-  list      Displays the clipped song list
-  delete    Deletes the song info (only one line)
-  purge     Purges the contents of existing file (delete all line)
-  help      Displays the Usage
+  now       Displays current stream title
+  list      Displays the contents
+  delete    Deletes the title (only one line)
+  purge     Deletes the contents (delete all line)
+  help      Displays the usage
 EOD
 }
 
 # Checks the stream
 function check_stream {
   if [ "$CURRENT_STREAM_TITLE" = "missing value" ]; then
-    echo "Error: Can't retrieve the cunrent stream title." 1>&2
+    echo "Can't retrieve the cunrent stream title." >&2
     return 1
   fi
 }
@@ -29,7 +29,7 @@ function check_stream {
 if [ "$#" -eq 0 ]; then
   check_stream
   if grep -Fqs "$CURRENT_STREAM_TITLE" "$CLIP_FILE"; then
-    echo "Now Playing the stream title is already exists." 1>&2
+    echo "Current stream title is already exists." >&2
     exit 1
   fi
   echo "$CURRENT_STREAM_TITLE" >>"$CLIP_FILE"
@@ -56,14 +56,14 @@ case "$1" in
         exit 0
       fi
     fi
-    echo "There is no such line. Please try again." 1>&2
+    echo "There is no such line. Please try again." >&2
     exit 1
     ;;
   purge)
     read -p "Are you sure you want to empty the file? (yes|no): " input
     if [ $input = "y" -o "$input" = "yes" ]; then
-      >"$CLIP_FILE"
-      echo "Purged the contents of the file."
+      cat /dev/null >"$CLIP_FILE"
+      echo "Purged the contents."
     fi
     ;;
   *)
