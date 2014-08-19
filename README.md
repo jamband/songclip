@@ -18,8 +18,8 @@ export CLIP_FILE=$HOME/path/to/songclip.txt
 ```
 
 ## Commands
-* **now** Displays a current stream title
-* **list** Displays the clipped song list
-* **delete** Deletes the song info (only one line)
-* **purge** Purges the contents of existing file (delete all line)
-* **help** Displays the Usage
+* **now** Displays the current stream title
+* **list** Displays the title list
+* **delete [id]** Deletes a title (only one line)
+* **purge** Purges the contents (delete all lines)
+* **help** Displays the usage
