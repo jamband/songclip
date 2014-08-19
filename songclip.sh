@@ -8,12 +8,12 @@ CURRENT_STREAM_TITLE=$(osascript -e 'tell application "iTunes" to current stream
 # Usage
 function usage {
   cat <<EOD
-Usage: $COMMAND_NAME <subcommand>
-  now       Displays current stream title
-  list      Displays the contents
-  delete    Deletes the title (only one line)
-  purge     Deletes the contents (delete all line)
-  help      Displays the usage
+Usage: $COMMAND_NAME <subcommand> [option]
+  now           Displays current stream title
+  list          Displays the contents
+  delete [id]   Deletes the title (only one line)
+  purge         Deletes the contents (delete all line)
+  help          Displays the usage
 EOD
 }
 
@@ -23,6 +23,26 @@ function check_stream {
     echo "Can't retrieve the cunrent stream title." >&2
     return 1
   fi
+}
+
+# Checks the argument count
+function check_arg_count {
+  if [ "$1" -ne "$2" ]; then
+    usage
+    return 1
+  fi
+}
+
+# Checks the number
+function check_number {
+  expr "$1" + 1 >/dev/null 2>&1 | true
+  if [ "${PIPESTATUS[0]}" -lt 2 ]; then
+    if [ "$1" -ne 0 -a "$1" -le $(awk 'END {print NR}' "$CLIP_FILE") ]; then
+      return 0
+    fi
+  fi
+  echo "There is no such line. Please try again." >&2
+  return 1
 }
 
 # If the argument is not specified
@@ -47,17 +67,10 @@ case "$1" in
     cat -n "$CLIP_FILE"
     ;;
   delete)
-    read -p "Please enter the line number: " input
-    expr "$input" + 1 >/dev/null 2>&1 | true
-    if [ "${PIPESTATUS[0]}" -lt 2 ]; then
-      if [ "$input" -ne 0 -a "$input" -le $(awk 'END { print NR }' "$CLIP_FILE") ]; then
-        sed -i "" "${input}d" "$CLIP_FILE"
-        echo "Deleted a line."
-        exit 0
-      fi
-    fi
-    echo "There is no such line. Please try again." >&2
-    exit 1
+    check_arg_count "$#" 2
+    check_number "$2"
+    sed -i "" "${2}d" "$CLIP_FILE"
+    echo "Deleted a line."
     ;;
   purge)
     read -p "Are you sure you want to empty the file? (yes|no): " input
