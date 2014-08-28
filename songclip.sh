@@ -11,6 +11,7 @@ Usage: $(basename "$0") <subcommand> [option]
   purge         Deletes the contents (delete all line)
   help          Displays the usage
 EOD
+  exit 1
 }
 
 # Gets the current stream title
@@ -27,26 +28,6 @@ function current_stream_title {
   echo "$title"
 }
 
-# Checks the argument count
-function check_arg_count {
-  if [ "$1" -ne "$2" ]; then
-    usage
-    return 1
-  fi
-}
-
-# Checks the number
-function check_number {
-  expr "$1" + 1 >/dev/null 2>&1 | true
-  if [ "${PIPESTATUS[0]}" -lt 2 ]; then
-    if [ "$1" -ne 0 -a "$1" -le $(awk 'END {print NR}' "$CLIPFILE") ]; then
-      return 0
-    fi
-  fi
-  echo "There is no such line. Please try again." >&2
-  return 1
-}
-
 # If the argument is not specified
 if [ "$#" -eq 0 ]; then
   title=$(current_stream_title)
@@ -59,7 +40,7 @@ if [ "$#" -eq 0 ]; then
   exit 0
 fi
 
-# Divides the processing by the sub-command
+# Divides the processing by sub-command
 case "$1" in
   now)
     echo "Now playing: $(current_stream_title)"
@@ -68,10 +49,17 @@ case "$1" in
     cat -n "$CLIPFILE"
     ;;
   delete)
-    check_arg_count "$#" 2
-    check_number "$2"
-    sed -i "" "${2}d" "$CLIPFILE"
-    echo "Deleted a line."
+    [ "$#" -eq 2 ] || usage
+    expr "$2" + 1 >/dev/null 2>&1 | true
+    if [ "${PIPESTATUS[0]}" -lt 2 ]; then
+      if [ "$2" -ne 0 -a "$2" -le $(awk 'END {print NR}' "$CLIPFILE") ]; then
+        sed -i "" "${2}d" "$CLIPFILE"
+        echo "Deleted a line."
+        exit 0
+      fi
+    fi
+    echo "There is no such line. Please try again." >&2
+    exit 1
     ;;
   purge)
     read -p "Are you sure you want to empty the file? (yes|no): " input
@@ -82,7 +70,6 @@ case "$1" in
     ;;
   *)
     usage
-    exit 1
     ;;
 esac
 
