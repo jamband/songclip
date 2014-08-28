@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 set -eu
 
-# Initialization
-COMMAND_NAME=$(basename "$0")
-CURRENT_STREAM_TITLE=$(osascript -e 'tell application "iTunes" to current stream title')
-
 # Usage
 function usage {
   cat <<EOD
-Usage: $COMMAND_NAME <subcommand> [option]
+Usage: $(basename "$0") <subcommand> [option]
   now           Displays current stream title
   list          Displays the contents
   delete [id]   Deletes the title (only one line)
@@ -17,12 +13,18 @@ Usage: $COMMAND_NAME <subcommand> [option]
 EOD
 }
 
-# Checks the stream
-function check_stream {
-  if [ "$CURRENT_STREAM_TITLE" = "missing value" ]; then
+# Gets the current stream title
+function current_stream_title {
+  title=$(osascript -e '
+    if application "iTunes" is running
+      tell application "iTunes" to current stream title
+    end if
+  ')
+  if [ "$title" = "" -o "$title" = "missing value" ]; then
     echo "Can't retrieve the cunrent stream title." >&2
     return 1
   fi
+  echo "$title"
 }
 
 # Checks the argument count
@@ -37,7 +39,7 @@ function check_arg_count {
 function check_number {
   expr "$1" + 1 >/dev/null 2>&1 | true
   if [ "${PIPESTATUS[0]}" -lt 2 ]; then
-    if [ "$1" -ne 0 -a "$1" -le $(awk 'END {print NR}' "$CLIP_FILE") ]; then
+    if [ "$1" -ne 0 -a "$1" -le $(awk 'END {print NR}' "$CLIPFILE") ]; then
       return 0
     fi
   fi
@@ -47,35 +49,34 @@ function check_number {
 
 # If the argument is not specified
 if [ "$#" -eq 0 ]; then
-  check_stream
-  if grep -Fqs "$CURRENT_STREAM_TITLE" "$CLIP_FILE"; then
+  title=$(current_stream_title)
+  if grep -Fqs "$title" "$CLIPFILE"; then
     echo "Current stream title is already exists." >&2
     exit 1
   fi
-  echo "$CURRENT_STREAM_TITLE" >>"$CLIP_FILE"
-  echo "Clipped: $CURRENT_STREAM_TITLE"
+  echo "$title" >>"$CLIPFILE"
+  echo "Clipped: $title"
   exit 0
 fi
 
 # Divides the processing by the sub-command
 case "$1" in
   now)
-    check_stream
-    echo "Now playing: $CURRENT_STREAM_TITLE"
+    echo "Now playing: $(current_stream_title)"
     ;;
   list)
-    cat -n "$CLIP_FILE"
+    cat -n "$CLIPFILE"
     ;;
   delete)
     check_arg_count "$#" 2
     check_number "$2"
-    sed -i "" "${2}d" "$CLIP_FILE"
+    sed -i "" "${2}d" "$CLIPFILE"
     echo "Deleted a line."
     ;;
   purge)
     read -p "Are you sure you want to empty the file? (yes|no): " input
-    if [ $input = "y" -o "$input" = "yes" ]; then
-      cat /dev/null >"$CLIP_FILE"
+    if [ "$input" = "y" -o "$input" = "yes" ]; then
+      cat /dev/null >"$CLIPFILE"
       echo "Purged the contents."
     fi
     ;;

@@ -11,10 +11,10 @@ Saves the current stream title of iTunes internet radio to a text file with Bash
 Download the songclip.sh and put in directory any.
 
 ## Usage
-Sets a CLIP_FILE variable. the title will be save in this file. e.g. .bash_profile, etc...
+Sets a CLIPFILE variable. the title will be save in this file. e.g. .bash_profile, etc...
 
 ```sh
-export CLIP_FILE=$HOME/path/to/songclip.txt
+export CLIPFILE=$HOME/path/to/songclip.txt
 ```
 
 ## Commands
