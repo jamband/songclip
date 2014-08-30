@@ -43,7 +43,8 @@ fi
 # Divides the processing by sub-command
 case "$1" in
   now)
-    echo "Now playing: $(current_stream_title)"
+    title=$(current_stream_title)
+    echo "Now playing: $title"
     ;;
   list)
     cat -n "$CLIPFILE"
