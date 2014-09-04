@@ -22,7 +22,7 @@ function current_stream_title {
     end if
   ')
   if [ "$title" = "" -o "$title" = "missing value" ]; then
-    echo "Can't retrieve the cunrent stream title." >&2
+    echo "Can't retrieve the current stream title." >&2
     return 1
   fi
   echo "$title"
