@@ -11,7 +11,7 @@ Usage: $(basename "$0") <subcommand> [option]
   purge         Deletes the contents (delete all line)
   help          Displays the usage
 EOD
-  exit 1
+  return 1
 }
 
 # Gets the current stream title
