@@ -5,7 +5,7 @@ Saves the current stream title of iTunes internet radio to a text file with Bash
 ![gif](http://jamband.github.io/images/songclip.gif)
 
 ## Requirements
-* Mac OSX
+* OS X
 
 ## Install
 Download the songclip.sh and put in directory any.
