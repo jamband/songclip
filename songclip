@@ -16,12 +16,8 @@ EOD
 
 # Gets the current stream title
 function current_stream_title {
-  title=$(osascript -e '
-    if application "iTunes" is running
-      tell application "iTunes" to current stream title
-    end if
-  ')
-  if [ "$title" = "" -o "$title" = "missing value" ]; then
+  title=$(osascript -l JavaScript -e 'Application("iTunes").currentStreamTitle.get()')
+  if [ "$title" = "null" ]; then
     echo "Can't retrieve the current stream title." >&2
     return 1
   fi
