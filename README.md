@@ -5,7 +5,7 @@ Saves the current stream title of iTunes internet radio to a text file with Bash
 ![gif](http://jamband.github.io/images/songclip.gif)
 
 ## Requirements
-* OS X
+* OS X Yosemite or later
 
 ## Install
 Download the **songclip** and put in directory any.
@@ -23,3 +23,6 @@ export CLIPFILE=$HOME/path/to/songclip.txt
 * **delete [id]** Deletes a title (only one line)
 * **purge** Purges the contents (delete all lines)
 * **help** Displays the usage
+
+## Web edition
+[songclip-plus](https://github.com/jamband/songclip-plus)
